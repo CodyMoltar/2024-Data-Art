@@ -6,7 +6,8 @@ from sklearn.cluster import KMeans
 import json
 import csv
 
-
+from PIL import Image
+from PIL.ExifTags import TAGS
 
 # SETTINGS
 TARGETFOLDER = 'squared_cropped' # folder with images to extract colors from
@@ -39,9 +40,22 @@ for image_file in image_files:
     hist = hist.astype("float")
     hist /= hist.sum()
 
+    exif_data = {}
+    try:
+        pil_image = Image.open(image_path)
+        info = pil_image._getexif()
+        if info:
+            for tag, value in info.items():
+                decoded = TAGS.get(tag, tag)
+                exif_data[decoded] = value
+        print(f"EXIF data for {image_file}: {exif_data}")  # Debugging line
+    except Exception as e:
+        print(f"Error extracting EXIF data from {image_file}: {e}")
+
     image_info = {
         'dominant_colors': cluster.cluster_centers_.tolist(),
-        'weights': hist.tolist()
+        'weights': hist.tolist(),
+        'exif_data': exif_data
     }
 
     data[image_file] = image_info # Add to the same list [x, x]
