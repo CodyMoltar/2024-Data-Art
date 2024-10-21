@@ -21,7 +21,9 @@ all_files = os.listdir(path)
 
 image_files = [f for f in all_files if f.lower().endswith(VALID_EXTENSIONS)]
 
-data = {}
+data = { 'data' : []}
+
+# print out the data objects data key
 
 for image_file in image_files:
     # Construct the full image path
@@ -40,25 +42,27 @@ for image_file in image_files:
     hist = hist.astype("float")
     hist /= hist.sum()
 
-    exif_data = {}
-    try:
-        pil_image = Image.open(image_path)
-        info = pil_image._getexif()
-        if info:
-            for tag, value in info.items():
-                decoded = TAGS.get(tag, tag)
-                exif_data[decoded] = value
-        print(f"EXIF data for {image_file}: {exif_data}")  # Debugging line
-    except Exception as e:
-        print(f"Error extracting EXIF data from {image_file}: {e}")
+    # exif_data = {}
+    # try:
+    #     pil_image = Image.open(image_path)
+    #     info = pil_image._getexif()
+    #     if info:
+    #         for tag, value in info.items():
+    #             decoded = TAGS.get(tag, tag)
+    #             exif_data[decoded] = value
+    #     print(f"EXIF data for {image_file}: {exif_data}")  # Debugging line
+    # except Exception as e:
+    #     print(f"Error extracting EXIF data from {image_file}: {e}")
 
     image_info = {
         'dominant_colors': cluster.cluster_centers_.tolist(),
         'weights': hist.tolist(),
-        'exif_data': exif_data
     }
 
-    data[image_file] = image_info # Add to the same list [x, x]
+    # push the image info to the data list
+    data['data'].append(image_info)
+
+    # data[image_file] = image_info # Add to the same list [x, x]
 
 # print(data)
 
@@ -67,21 +71,21 @@ with open('./data_' + TARGETFOLDER + '.json', 'w') as outfile:
 
 
 # Write the data to a CSV file
-csv_file_path = './data_' + TARGETFOLDER + '.csv'
-with open(csv_file_path, 'w', newline='') as csvfile:
-    csv_writer = csv.writer(csvfile)
+# csv_file_path = './data_' + TARGETFOLDER + '.csv'
+# with open(csv_file_path, 'w', newline='') as csvfile:
+    # csv_writer = csv.writer(csvfile)
     
-    # Write the header
-    header = ['filename']
-    for i in range(NUMBER_OF_COLORS_TO_DETECT):
-        header.append(f'colour_{i+1}')
-        header.append(f'weight_{i+1}')
-    csv_writer.writerow(header)
+    # # Write the header
+    # header = ['filename']
+    # for i in range(NUMBER_OF_COLORS_TO_DETECT):
+    #     header.append(f'colour_{i+1}')
+    #     header.append(f'weight_{i+1}')
+    # csv_writer.writerow(header)
     
-    # Write the data rows
-    for filename, info in data.items():
-        row = [filename]
-        for color, weight in zip(info['dominant_colors'], info['weights']):
-            row.append(color)
-            row.append(weight)
-        csv_writer.writerow(row)
+    # # Write the data rows
+    # for filename, info in data.items():
+    #     row = [filename]
+    #     for color, weight in zip(info['dominant_colors'], info['weights']):
+    #         row.append(color)
+    #         row.append(weight)
+    #     csv_writer.writerow(row)
