@@ -1,0 +1,3 @@
+We had a workshop today on creating interactive media.  We learned how to use basic coding to make a website where users can click on different elements to change the content.  It was challenging, but kind of fun.  Maybe I should take a coding class.
+
+
